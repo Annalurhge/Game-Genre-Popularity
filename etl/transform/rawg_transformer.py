@@ -1,6 +1,6 @@
 import pandas as pd
-import re
 import numpy as np
+import re
 import json
 
 class RAWGTransformer:
