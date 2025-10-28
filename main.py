@@ -3,6 +3,7 @@ from os import getenv
 
 from etl import RAWGExtractor, RAWGTransformer
 from etl import GameBrainExtractor, GameBrainTransformer
+from etl import RAWGDB
 
 from icecream import ic
 
@@ -12,6 +13,15 @@ load_dotenv()
 
 #rawg_base_url = getenv('RAWG_BASE_URL')
 #gamebrain_base_url = getenv('GAMEBRAIN_BASE_URL')
+
+db_dialect_driver = getenv("DB_DIALECT_DRIVER")
+db_user = getenv("DB_USER")
+db_password = getenv("DB_PASSWORD")
+db_host = getenv("DB_HOST")
+db_port = getenv("DB_PORT")
+db_name = getenv("DB_NAME")
+
+db_uri = f"{db_dialect_driver}://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
 #rawg_extractor = RAWGExtractor(base_url=rawg_base_url)
 #gamebrain_extractor = GameBrainExtractor(base_url=gamebrain_base_url)
@@ -31,6 +41,9 @@ load_dotenv()
 rt = RAWGTransformer(file_path="data/raw/rawg_top_rated_games.json")
 rt.load_data()
 ic(rt.transform())
-rt.separate_into_rows(column="genres")
+rt.separate_into_rows(columns=["genres"])
 ic(rt.data)
 rt.save_data(file_path="data/transformed/rawg_top_rated_games.csv")
+
+rawg_db = RAWGDB(db_uri=db_uri)
+rawg_db.load_to_db(data=rt.data, table_name="dim_games")

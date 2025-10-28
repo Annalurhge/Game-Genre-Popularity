@@ -28,7 +28,7 @@ class RAWGTransformer:
 
         return self.data
     
-    def separate_into_rows(self, column):
+    def separate_into_rows(self, columns: list[str]) -> pd.DataFrame:
         """
         Separates entries in a specified column that contain multiple values separated by a comma.
         
@@ -44,22 +44,24 @@ class RAWGTransformer:
         | Game A       | Adventure |
 
         Args:
-            column (str): The column to separate into multiple rows.
+            columns (list): The column/s to separate into multiple rows.
         """
 
-        # Split the column by comma and explode the DataFrame
-        self.data[column] = self.data[column].str.split(', ')
-        self.data = self.data.explode(column).reset_index(drop=True)
+        for column in columns:
+            self.data[column] = self.data[column].str.split(', ')
+            self.data = self.data.explode(column).reset_index(drop=True)
 
         return self.data
 
     def _remove_null_entries(self):
         for col in self.non_nulls:
             self.data[col] = self.data[col].replace('', np.nan)
+            
         self.data.dropna(subset=self.non_nulls, inplace=True)
         self.data.reset_index(drop=True, inplace=True)
 
         return self.data
+    
     def _clean_nested_values(self):
         def _is_eng(tag):
             return not bool(re.search(r'[^\u0000-\u007F]', tag))
