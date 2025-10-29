@@ -4,6 +4,7 @@ from os import getenv
 from etl import RAWGExtractor, RAWGTransformer
 from etl import GameBrainExtractor, GameBrainTransformer
 from etl import RAWGDB
+from etl import RAWGModel
 
 from icecream import ic
 
@@ -40,10 +41,11 @@ db_uri = f"{db_dialect_driver}://{db_user}:{db_password}@{db_host}:{db_port}/{db
 
 rt = RAWGTransformer(file_path="data/raw/rawg_top_rated_games.json")
 rt.load_data()
-ic(rt.transform())
+rt.transform()
 rt.separate_into_rows(columns=["genres"])
-ic(rt.data)
 rt.save_data(file_path="data/transformed/rawg_top_rated_games.csv")
 
-rawg_db = RAWGDB(db_uri=db_uri)
-rawg_db.load_to_db(data=rt.data, table_name="dim_games")
+rawg_model = RAWGModel(data=rt.data)
+
+rawg_db = RAWGDB(db_uri=db_uri, dim_games=rawg_model.games, dim_genres=rawg_model.genres)
+rawg_db.load_to_db(data=[rawg_model.games, rawg_model.genres], table_name=["dim_games", "dim_genres"])
