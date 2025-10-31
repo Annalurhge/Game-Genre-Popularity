@@ -1,7 +1,48 @@
+from icecream import ic
 import pandas as pd
 import numpy as np
 import re
 import json
+
+class RAWGModel:
+    def __init__(self, data: pd.DataFrame):
+        self.data = data
+
+        self.games: pd.DataFrame = None
+        self.genres: pd.DataFrame = None
+        self.ratings: pd.DataFrame = None
+
+        try:
+            self.games = self._unique_games()
+            self.genres = self._unique_genres()
+            self.ratings = self._ratings()
+            
+        except Exception as e:
+            print(f"An error occurred while modeling data: {e}")
+            raise
+
+    def _unique_games(self) -> pd.DataFrame:
+        unique_games = self.data.drop_duplicates(subset=['name'])
+        new_df: pd.DataFrame = pd.DataFrame()
+
+        new_df['game_name'] = unique_games['name']
+        new_df['year_released'] = unique_games['released'].astype('datetime64[ns]').dt.year
+
+        return new_df.reset_index(drop=True)
+    
+    def _unique_genres(self) -> pd.DataFrame:
+        unique_genres = self.data.drop_duplicates(subset=['genres'])
+        new_df: pd.DataFrame = pd.DataFrame()
+
+        new_df['genre_name'] = unique_genres['genres']
+
+        return new_df.reset_index(drop=True)
+    
+    def _ratings(self) -> pd.DataFrame:
+        unique_games = self.data.drop_duplicates(subset=['name'])
+        ratings_and_counts = unique_games[['rating', 'ratings_count']]
+
+        return ratings_and_counts.reset_index(drop=True)
 
 class RAWGTransformer:
     def __init__(self, file_path: str):

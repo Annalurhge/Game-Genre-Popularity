@@ -42,19 +42,24 @@ def create_columns(db_uri):
 
     class FactGameGenres(base):
         __tablename__ = 'fact_game_genres'
-        genre_id = Column(Integer, primary_key=True)
-        game_id = Column(Integer, primary_key=True)
+        id = Column(Integer, autoincrement=True, primary_key=True)
+        genre_id = Column(Integer)
+        game_id = Column(Integer)
     
     class DimGenres(base):
         __tablename__ = 'dim_genres'
-        genre_id = Column(Integer, primary_key=True)
-        genre_name = Column(String)
+        genre_id = Column(Integer, autoincrement=True, primary_key=True)
+        genre_name = Column(String, unique=True)
     
     class DimGames(base):
         __tablename__ = 'dim_games'
-        game_id = Column(Integer, primary_key=True)
-        game_name = Column(String)
+        game_id = Column(Integer, autoincrement=True, primary_key=True)
+        game_name = Column(String, unique=True)
         year_released = Column(Integer)
+    
+    class DimRatings(base):
+        __tablename__ = 'dim_ratings'
+        rating_id = Column(Integer, autoincrement=True, primary_key=True)
         rating = Column(Float)
         ratings_count = Column(Integer)
 
