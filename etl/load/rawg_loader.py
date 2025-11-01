@@ -1,20 +1,53 @@
 import sqlalchemy
+from sqlalchemy.orm import sessionmaker
 import pandas as pd
 
 class RAWGDB:
-    def __init__(self, db_uri: str, dim_games: pd.DataFrame = None, dim_genres: pd.DataFrame = None, dim_ratings: pd.DataFrame = None) -> None:
+    def __init__(self, db_uri: str) -> None:
         self.engine = sqlalchemy.create_engine(db_uri)
-        self.dim_games = dim_games
-        self.dim_genres = dim_genres
-        self.dim_ratings = dim_ratings
+        self.session = sessionmaker(bind=self.engine)()
 
-    def load_to_db(self, data: list[pd.DataFrame], table_name: list[str], if_exists: str = 'append') -> None:
+    def load_to_db(self, data: pd.DataFrame, table_schemas: list = []) -> None:
         try:
-            for data, table in zip(data, table_name):
-                if table is None: continue
-                data.to_sql(table, con=self.engine, if_exists=if_exists, index=False)
-                print(f"Data loaded successfully into table: {table}")
+            game_cache = {}
+            genre_cache = {}
+            rating_cache = {}
+
+            for row in data.itertuples():
+                if row.name not in game_cache:
+                    game_obj = self.session.merge(
+                        table_schemas[0](
+                            game_name=row.name,
+                            year_released=row.released.year
+                        )
+                    )
+                    game_cache[row.name] = game_obj
+                
+                if row.genres not in genre_cache:
+                    genre_obj = self.session.merge(
+                        table_schemas[1](
+                            genre_name=row.genres
+                        )
+                    )
+                    genre_cache[row.genres] = genre_obj
+
+                self.session.flush()
+
+                fact = table_schemas[2](
+                game_id = game_cache[row.name].game_id,
+                genre_id = genre_cache[row.genres].genre_id,
+                rating = row.rating,
+                rating_count = row.ratings_count
+                )
+                self.session.add(fact)
+            self.session.commit()
+            print("Data loaded successfully into the database.")
 
         except Exception as e:
             print(f"An error occurred while loading data to the database: {e}")
+            self.session.rollback()
             raise
+        
+        finally:
+            self.session.close()
+            self.engine.dispose()

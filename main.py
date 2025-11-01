@@ -5,6 +5,8 @@ from etl import RAWGExtractor, RAWGTransformer, RAWGModel
 from etl import GameBrainExtractor, GameBrainTransformer
 from etl import RAWGDB
 
+from database import DimGames, DimGenres, FactGameGenres
+
 from icecream import ic
 
 load_dotenv()
@@ -44,7 +46,10 @@ rt.transform()
 rt.separate_into_rows(columns=["genres"])
 rt.save_data(file_path="data/transformed/rawg_top_rated_games.csv")
 
-rawg_model = RAWGModel(data=rt.data)
+# rawg_model = RAWGModel(data=rt.data)
 
-rawg_db = RAWGDB(db_uri=db_uri, dim_games=rawg_model.games, dim_genres=rawg_model.genres, dim_ratings=rawg_model.ratings)
-rawg_db.load_to_db(data=[rawg_model.games, rawg_model.genres, rawg_model.ratings], table_name=["dim_games", "dim_genres", "dim_ratings"])
+# rawg_db = RAWGDB(db_uri=db_uri, dim_games=rawg_model.games, dim_genres=rawg_model.genres, dim_ratings=rawg_model.ratings)
+# rawg_db.load_to_db(data=[rawg_model.games, rawg_model.genres, rawg_model.ratings], table_name=["dim_games", "dim_genres", "dim_ratings"], table_schemas=[DimGames, DimGenres, DimRatings])
+
+rawg_db = RAWGDB(db_uri=db_uri)
+rawg_db.load_to_db(data=rt.data, table_schemas=[DimGames, DimGenres, FactGameGenres])
