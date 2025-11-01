@@ -11,7 +11,6 @@ class RAWGDB:
         try:
             game_cache = {}
             genre_cache = {}
-            rating_cache = {}
 
             for row in data.itertuples():
                 if row.name not in game_cache:

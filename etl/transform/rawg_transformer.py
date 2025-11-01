@@ -4,48 +4,8 @@ import numpy as np
 import re
 import json
 
-class RAWGModel:
-    def __init__(self, data: pd.DataFrame):
-        self.data = data
-
-        self.games: pd.DataFrame = None
-        self.genres: pd.DataFrame = None
-        self.ratings: pd.DataFrame = None
-
-        try:
-            self.games = self._unique_games()
-            self.genres = self._unique_genres()
-            self.ratings = self._ratings()
-            
-        except Exception as e:
-            print(f"An error occurred while modeling data: {e}")
-            raise
-
-    def _unique_games(self) -> pd.DataFrame:
-        unique_games = self.data.drop_duplicates(subset=['name'])
-        new_df: pd.DataFrame = pd.DataFrame()
-
-        new_df['game_name'] = unique_games['name']
-        new_df['year_released'] = unique_games['released'].astype('datetime64[ns]').dt.year
-
-        return new_df.reset_index(drop=True)
-    
-    def _unique_genres(self) -> pd.DataFrame:
-        unique_genres = self.data.drop_duplicates(subset=['genres'])
-        new_df: pd.DataFrame = pd.DataFrame()
-
-        new_df['genre_name'] = unique_genres['genres']
-
-        return new_df.reset_index(drop=True)
-    
-    def _ratings(self) -> pd.DataFrame:
-        unique_games = self.data.drop_duplicates(subset=['name'])
-        ratings_and_counts = unique_games[['rating', 'ratings_count']]
-
-        return ratings_and_counts.reset_index(drop=True)
-
 class RAWGTransformer:
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str) -> None:
         self.file_path = file_path
         self.data = None
         self.non_nulls = ['released', 'rating', 'genres']
@@ -94,7 +54,7 @@ class RAWGTransformer:
 
         return self.data
 
-    def _remove_null_entries(self):
+    def _remove_null_entries(self) -> pd.DataFrame:
         for col in self.non_nulls:
             self.data[col] = self.data[col].replace('', np.nan)
             
@@ -103,7 +63,7 @@ class RAWGTransformer:
 
         return self.data
     
-    def _clean_nested_values(self):
+    def _clean_nested_values(self) -> pd.DataFrame:
         def _is_eng(tag):
             return not bool(re.search(r'[^\u0000-\u007F]', tag))
         
@@ -118,7 +78,7 @@ class RAWGTransformer:
 
         return self.data
     
-    def _fix_data_type(self, columns):
+    def _fix_data_type(self, columns) -> pd.DataFrame:
         for key, value in columns.items():
             self.data.loc[:, key] = self.data[key].astype(value)
 

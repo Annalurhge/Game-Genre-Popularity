@@ -1,11 +1,13 @@
 import requests
 import json
 
+from typing import Optional
+
 class RAWGExtractor:
-    def __init__(self, base_url):
+    def __init__(self, base_url) -> None:
         self.base_url = base_url
 
-    def _make_request(self, endpoint, params=None):
+    def _make_request(self, endpoint, params=None) -> Optional[dict]:
         url = f"{self.base_url}/{endpoint}"
 
         try:
@@ -19,7 +21,7 @@ class RAWGExtractor:
 
             return None
 
-    def fetch_data(self, endpoint, params=None):
+    def fetch_data(self, endpoint, params=None) -> Optional[dict]:
         print("Fetching data from RAWG API at endpoint: ", endpoint)
 
         data = self._make_request(endpoint, params)
@@ -32,7 +34,7 @@ class RAWGExtractor:
 
             return None
     
-    def save_data(self, data, file_path):
+    def save_data(self, data, file_path) -> None:
         try:
             with open(file_path, 'w') as f:
                 json.dump(data, f, indent=4)

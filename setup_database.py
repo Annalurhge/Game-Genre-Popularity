@@ -16,7 +16,7 @@ DB_NAME = getenv("DB_NAME")
 
 TEMP = "postgres"
 
-def create_database(db_uri):
+def create_database(db_uri) -> None:
     engine = create_engine(db_uri)
     try:
         with engine.connect() as connection:
@@ -36,7 +36,7 @@ def create_database(db_uri):
     finally:
         engine.dispose()
 
-def create_columns(db_uri):
+def create_columns(db_uri) -> None:
     engine = create_engine(db_uri)
 
     try:
