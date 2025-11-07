@@ -11,5 +11,7 @@
       "username": "postgres",
       "name": "Game Trend"
     }
-  ]
+  ],
+  "python-envs.pythonProjects": [],
+  "python-envs.defaultEnvManager": "ms-python.python:system"
 }

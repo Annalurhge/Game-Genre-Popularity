@@ -1,11 +1,11 @@
 from dotenv import load_dotenv
 from os import getenv
 
-from etl import RAWGExtractor, RAWGTransformer, RAWGModel
+from etl import RAWGExtractor, RAWGTransformer
 from etl import GameBrainExtractor, GameBrainTransformer
 from etl import RAWGDB
 
-from database import DimGames, DimGenres, FactGameGenres
+from setup_files.database_schema import DimGames, DimGenres, FactGameGenres
 
 from icecream import ic
 
@@ -34,17 +34,17 @@ db_uri = f"{db_dialect_driver}://{db_user}:{db_password}@{db_host}:{db_port}/{db
 #gamebrain_data = gamebrain_extractor.fetch_data(endpoint="games", params={"filters": '[{"key":"release_date", "values":[{"value":"last_5_years"}]}]', "sort": "computed_rating", "sort_order":"desc",
 #                                                                          "api-key": gamebrain_api_key, "limit": 10, "offset":0})
 
-#rawg_extractor.save_data(rawg_data, file_path="data/raw/rawg_top_rated_games.json")
-#amebrain_extractor.save_data(gamebrain_data, file_path="data/raw/gamebrain_top_rated_games.json")
+#rawg_extractor.save_data(rawg_data, file_path="../data/raw/rawg_top_rated_games.json")
+#amebrain_extractor.save_data(gamebrain_data, file_path="../data/raw/gamebrain_top_rated_games.json")
 
-# gbt = GameBrainTransformer(file_path="data/raw/gamebrain_top_rated_games.json")
+# gbt = GameBrainTransformer(file_path="../data/raw/gamebrain_top_rated_games.json")
 # gbt.load_data()
 
-rt = RAWGTransformer(file_path="data/raw/rawg_top_rated_games.json")
+rt = RAWGTransformer(file_path="../data/raw/rawg_top_rated_games.json")
 rt.load_data()
 rt.transform()
 rt.separate_into_rows(columns=["genres"])
-rt.save_data(file_path="data/transformed/rawg_top_rated_games.csv")
+rt.save_data(file_path="../data/transformed/rawg_top_rated_games.csv")
 
 # rawg_model = RAWGModel(data=rt.data)
 

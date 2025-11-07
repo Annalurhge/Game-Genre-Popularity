@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
-from database import *
+from setup_files.database_schema import *
 
 from dotenv import load_dotenv
 from os import getenv

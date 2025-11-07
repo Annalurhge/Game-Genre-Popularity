@@ -1,6 +1,25 @@
-venv/
-.env
+# Python
+.venv
 __pycache__/
 *.pyc
-test.py
+
+# SQL
 *.sql
+
+# Airflow
+simple_auth_manager_passwords.json.generated
+airflow.cfg
+airflow.db
+logs/
+*.log
+*.pid
+webserver_config.py
+
+# Environment / Secrets
+.env
+
+# VSCode things
+.vscode/
+
+# Other
+test.py
