@@ -31,8 +31,7 @@ class RAWGExtractor:
             return data
         else:
             print("Failed to fetch data.")
-
-            return None
+            raise
     
     def save_data(self, data, file_path) -> None:
         try:
@@ -43,3 +42,4 @@ class RAWGExtractor:
             
         except IOError as e:
             print(f"Error saving data to {file_path}: {e}")
+            raise

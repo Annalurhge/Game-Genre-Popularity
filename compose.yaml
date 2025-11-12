@@ -1,10 +1,15 @@
-version: '3'
-
 services:
   gamegenrepopularity-airflow:
     image: gamegenrepopularity-airflow:latest
+
+    environment:
+      - PYTHONPATH=/opt/airflow:${PYTHONPATH}
     volumes:
       - ./airflow:/opt/airflow
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+    
+    env_file: ./.env
     
     ports:
       - "8080:8080"
