@@ -74,7 +74,8 @@ class RAWGTransformer:
                 return ', '.join([tag['name'] for tag in tags if _is_eng(tag['name'])])
         
         for row in self.tags:
-            self.data.loc[:, row] = self.data[row].apply(_extract_tags)
+            if not self.data[row].isna().any():
+                self.data.loc[:, row] = self.data[row].apply(_extract_tags)
 
         return self.data
     

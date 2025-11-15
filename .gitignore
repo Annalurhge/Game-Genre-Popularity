@@ -19,7 +19,9 @@ webserver_config.py
 .env
 
 # VSCode things
-.vscode/
+*.vscode/
 
 # Other
 test.py
+/data/raw/
+/data/transformed/

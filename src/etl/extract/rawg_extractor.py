@@ -1,37 +1,47 @@
+from dotenv import load_dotenv
+load_dotenv()
+
+from os import getenv
+
 import requests
 import json
 
 from typing import Optional
 
 class RAWGExtractor:
-    def __init__(self, base_url) -> None:
+    def __init__(self, base_url: str = None, enable_pagination: bool = False, params: dict = None) -> None:
         self.base_url = base_url
+        self.enable_pagination = enable_pagination
+        self.params = params
 
-    def _make_request(self, endpoint, params=None) -> Optional[dict]:
-        url = f"{self.base_url}/{endpoint}"
-
+    def _make_request(self) -> Optional[dict]:
         try:
-            response = requests.get(url, params=params)
+            if self.params:
+                response = requests.get(self.base_url, params=self.params)
+            else:
+                response = requests.get(self.base_url)
+
             response.raise_for_status()
 
             return response.json()
         
         except requests.exceptions.RequestException as e:
-            print(f"Error making request to {url}: {e}")
+            print(f"Error making request to {self.base_url}: {e}")
 
             return None
 
-    def fetch_data(self, endpoint, params=None) -> Optional[dict]:
-        print("Fetching data from RAWG API at endpoint: ", endpoint)
-
-        data = self._make_request(endpoint, params)
+    def fetch_data(self) -> Optional[dict]:
+        data = self._make_request()
         if data:
+            if self.enable_pagination:
+                self.params = None
+                self.base_url = data['next']
             print("Data fetched successfully")
 
             return data
         else:
             print("Failed to fetch data.")
-            raise
+            print(data)
     
     def save_data(self, data, file_path) -> None:
         try:
