@@ -8,7 +8,7 @@ class RAWGTransformer:
     def __init__(self, file_path: str) -> None:
         self.file_path = file_path
         self.data = None
-        self.non_nulls = ['released', 'rating', 'genres']
+        self.non_nulls = ['name', 'released', 'rating', 'genres']
 
     def load_data(self) -> None:
         with open(self.file_path, 'r') as f:
@@ -49,7 +49,10 @@ class RAWGTransformer:
         """
 
         for column in columns:
-            self.data[column] = self.data[column].str.split(', ')
+            try:
+                self.data[column] = self.data[column].str.split(', ')
+            except AttributeError:
+                pass
             self.data = self.data.explode(column).reset_index(drop=True)
 
         return self.data

@@ -32,7 +32,13 @@ def extract_dag():
         page = 1
 
         while rawg_extractor.base_url:
+            print(f"Fetching from url: {rawg_extractor.base_url}")
             data = rawg_extractor.fetch_data()
+
+            if not data:
+                print("No data returned, stopping pagination.")
+                break
+
             rawg_extractor.save_data(data, f'{file_prefix}_page_{page}.json')
             page += 1
             time.sleep(0.21)
